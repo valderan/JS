@@ -12,3 +12,5 @@ console.log("Стоимость:", money);
 
 // alert
 alert( mission );
+
+// добавление ветки git -> lesson01
