@@ -62,11 +62,11 @@ console.log('Дневной бюджет:', Math.floor(budgetDay));
 // определим уровень дохода за день
 switch (true) {
     
-    case (budgetDay > 800):
+    case (budgetDay >= 800):
         console.log('Высокий уровень дохода');
         break;
     
-    case (budgetDay > 300 && budgetDay < 800):
+    case (budgetDay >= 300 && budgetDay < 800):
         console.log('Средний уровень дохода');
         break;
 
@@ -74,7 +74,7 @@ switch (true) {
         console.log('Низкий уровень дохода');
         break;
 
-    case (budgetDay < 0):
+    case (budgetDay <= 0):
         console.log('Что-то пошло не так');
         break;
 
