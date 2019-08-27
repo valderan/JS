@@ -20,7 +20,7 @@ console.log('deposit - ',deposit);
 
 // Вывести в консоль типы данных money, income, deposit
 console.log('Тип money - ', typeof money);
-console.log('Тип addExpenses - ', typeof addExpenses);
+console.log('Тип deposit - ', typeof deposit);
 console.log('Тип income - ', typeof income);
 
 // возврат значения ввиде массива вопрос / ответ
