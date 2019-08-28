@@ -9,25 +9,15 @@ let mission = 400000;
 // доход за месяц
 let money = prompt('Ваш месячный доход?', '50000');
 
-// дополнительный расход    
-let addExpenses = prompt('Перечислите возможные расходы за рассчитываемый период через запятую', 
-                         'оружие, наркотики, шлюхи');
-console.log(addExpenses.split(','));
-
-// объявим депозит и спросим про его наличие
-let deposit = prompt('Есть ли у вас депозит в банке?', 'нет я бомж') == 'да' ? true : false;
-console.log('deposit - ',deposit); 
-
-// Вывести в консоль типы данных money, income, deposit
-console.log('Тип money - ', typeof money);
-console.log('Тип deposit - ', typeof deposit);
-console.log('Тип income - ', typeof income);
-
 // возврат значения ввиде массива вопрос / ответ
-function getArrayRecord(questionOne, questionTwo, baseValueOne = '1', baseValueTwo = '200') {
+let getArrayRecord = function(questionOne, questionTwo, baseValueOne = '1', baseValueTwo = '200') {
     return [prompt(questionOne, baseValueOne), prompt(questionTwo, baseValueTwo)];
-}
+};
 
+// выводим тип передаваемого значения
+let showTypeOf = function(data) {
+    console.log(data, typeof(data));
+};
 // доп расходы 
 // объявление переменных
 let question1 = 'Какие обязательные ежемесячные расходы у вас есть?';
@@ -40,42 +30,62 @@ for (let index = 0; index < qountQuestion; index++) {
     additionalСost.push( getArrayRecord(question1, question2) );    
 }
 
-// вычислим доходы за месяц
-let allExpense = 0;
-
-additionalСost.forEach((element) => {
-    allExpense += Number(element[1]);
-});
-
-let budgetMonth = money - allExpense;
-console.log('Доход за месяц:', budgetMonth);
+// расчитаем доходы за месяц 
+let accumulatedMonth = getAccumulatedMonth(getExpensesMonth(additionalСost), money);
+console.log('Доход за месяц:', accumulatedMonth);
 
 // расчет кол-ва месяцев для достижения фин. цели 
-let missionMonthCount = mission / budgetMonth;
-console.log('Достижение цели', mission,'за', Math.ceil( missionMonthCount), 'мес.');
+let missionMonthCount = getTargetMonth(mission, accumulatedMonth);
+console.log('Достижение цели', mission,'за', Math.floor(missionMonthCount), 'мес.');
+
+
+// расчет всех расходов 
+function getExpensesMonth(expenses) {
+
+    let allExpense = 0;
+
+    expenses.forEach((element) => {
+        allExpense += Number(element[1]);
+    });
+
+    return allExpense;
+};
+
+// вычисление доходов за месяц
+function getAccumulatedMonth(moneyPerMonth, expenses) {
+
+    return  expenses - moneyPerMonth ;
+
+};
+
+// период для достижения финансовой цели
+function  getTargetMonth(missionMonth, monthBudget) {
+    return missionMonth / monthBudget;
+};
 
 // вычисления бюджета на день
-let dayInMonth = 30;
-let budgetDay = money / dayInMonth;
-console.log('Дневной бюджет:', Math.floor(budgetDay));
+function getStatusIncome(money) {
 
-// определим уровень дохода за день
-switch (true) {
+    let dayInMonth = 30;
+    let budgetDay = money / dayInMonth;    
+
+    switch (true) {
     
-    case (budgetDay >= 800):
-        console.log('Высокий уровень дохода');
-        break;
+        case (budgetDay >= 800):
+            return 'Высокий уровень дохода';
+            break;
     
-    case (budgetDay >= 300 && budgetDay < 800):
-        console.log('Средний уровень дохода');
-        break;
+        case (budgetDay >= 300 && budgetDay < 800):
+            return 'Средний уровень дохода';
+            break;
 
-    case (budgetDay > 0 && budgetDay < 300):
-        console.log('Низкий уровень дохода');
-        break;
+        case (budgetDay > 0 && budgetDay < 300):
+            return 'Низкий уровень дохода';
+            break;
 
-    case (budgetDay <= 0):
-        console.log('Что-то пошло не так');
-        break;
+        case (budgetDay <= 0):
+            return 'Что-то пошло не так';
+            break;
 
+    };
 };
