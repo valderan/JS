@@ -1,7 +1,12 @@
 'use strict';
 
-// тестовая строка 32 символа
-let testString = '12345678901234567890123456789012';
+// ввод параметров
+let inputString = prompt('Введите значение');
+let testString = 0;
+
+// проверим если введены только цифры присвоим Number иначе String
+(!inputString.replace (/\d/g, '').length) ? testString = Number(inputString) : 
+                                            testString = inputString;
 
 // функция обрезания строки более 30 символов
 let shortString = function(string) {
@@ -15,9 +20,14 @@ let shortString = function(string) {
 
 // проверим передаваемый параметр 
 let test = function(data) {
-    if (typeof(data) === 'function') {
-        console.log('Параметр data - функция');
-    }   
+
+    if (typeof(data) === 'string') {
+        return shortString(data);
+    } else {
+        return 'Введен неверный тип';
+    }
+
 };
 
-test(shortString);
+// вызов функции и вывод результата в консоль
+console.log(test(testString));
