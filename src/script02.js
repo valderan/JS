@@ -1,33 +1,51 @@
 'use strict';
 
 // ввод параметров
-let inputString = prompt('Введите значение');
-let testString = 0;
+let arr = 
+[
+    '111111',
+    '2333',
+    '3333',
+    '444',
+    '5555',
+    '621222',
+    '711111'
+];
 
-// проверим если введены только цифры присвоим Number иначе String
-(!inputString.replace (/\d/g, '').length) ? testString = Number(inputString) : 
-                                            testString = inputString;
+// вовод в консоль значений начинающихся с 2 или 4
+arr.forEach((element) => {
+    if ( (element.length > 0) && (element.charAt(0) === '2' || element.charAt(0) === '4') ) {
+            console.log(element);
+    };  
 
-// функция обрезания строки более 30 символов
-let shortString = function(string) {
-    let workStr = String(string).trim();
-    if (workStr.length > 30) {
-        return workStr.substr(0,30) + '...';
-    } else {
-        return workStr;
+});
+
+// функция определяющая простое число(true) или составное(false)
+let checkPrimeNumber = function (number) {
+    
+    let checkStatus = true;
+    if (number === 1) {
+        return false;
     }
+    for (let index = 2; index < number; index ++) {
+            
+        let check = number % index;
+        if (check === 0) {
+            checkStatus = false;
+            break;
+        };
+        
+    };
+    
+    return checkStatus;
 };
 
-// проверим передаваемый параметр 
-let test = function(data) {
+// вывод всех простых чисел от 1 до 100
+// 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97
+for (let index = 1; index < 100; index++) {
 
-    if (typeof(data) === 'string') {
-        return shortString(data);
-    } else {
-        return 'Введен неверный тип';
-    }
-
+    if (checkPrimeNumber(index)) {
+        console.log('Простое число',index, ' делители этого числа: 1 и', index);
+    };
+    
 };
-
-// вызов функции и вывод результата в консоль
-console.log(test(testString));
