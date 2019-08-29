@@ -21,7 +21,16 @@ let start = function() {
 
 // возврат значения ввиде массива вопрос / ответ
 let getArrayRecord = function(questionOne, questionTwo, baseValueOne = '1', baseValueTwo = '200') {
-    return [prompt(questionOne, baseValueOne), prompt(questionTwo, baseValueTwo)];
+    //введем данные 
+    let resultOne = prompt(questionOne, baseValueOne),
+        resultTwo = prompt(questionTwo, baseValueTwo);
+
+    // проверим чтоб значение было число
+    while(isNaN(resultTwo) || resultTwo === '' || resultTwo === null) {
+        resultTwo = prompt(questionTwo, baseValueTwo);
+    }
+
+    return [resultOne, resultTwo];
 };
 
 // выводим тип передаваемого значения
