@@ -27,12 +27,8 @@ week.forEach((element, index) => {
         html = '<b>' + html + '</b>';
     };
 
-    console.log(date.getDay(), weekDayIndex, index, element);
-
     stringHTML += html + '<br>';
 });
-
-
 
 let div = document.createElement('div');
 div.innerHTML = stringHTML;
