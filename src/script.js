@@ -1,144 +1,260 @@
 'use strict';
 
-// дополнительный доход
-let income = 0; 
+// объект финстрока содержащий наименование и сумму 
+// 
+class FinDataString {
 
-// сумма необходимого накопления
-let mission = 400000;
+    constructor (name_ = '', value_ = 0) {
+        this.name = name_;
+        this.value = value_;
+    }
 
-// доход за месяц
-let money;
+    // добавление комментария записи
+    setName (name_) {
+        this.name = String(name_);
+    }
 
-// ввод и проверка суммы ежемесячного дохода
-let start = function() {
-    money = prompt('Ваш месячный доход?', '50000');
+    // добавление значения 
+    setValue (value_) {
 
-    while (isNaN(money) || money === '' || money === null) {
-        money = prompt('Ваш месячный доход?', '50000');
+        if (isNaN(value_) || value_ === '' || value_ === null) {
+            return false;
+        };
+
+        this.value = Number(value_);
+        return true;
+    }
+
+    // добавление целой строки
+    setString(name_, value_) {
+        this.setName(name_);
+        return this.setValue(value_);
+    }
+
+    // очистка 
+    clear () {
+        this.name = '';
+        this.value = 0;
+    }
+    
+};
+
+// множество записей FinDataString и логика работы 
+class FinArrayBudget {
+    
+    constructor() {
+        this.data = [];
+        this.record = new FinDataString();
+    }
+
+    // добавление строки
+    addString(name, value) {
+        return this.record.setString(name, value);
+    }
+
+    // загрузка строки в массив
+    load() {
+        let strNew = new FinDataString();
+        strNew.setString(this.record.name, this.record.value);
+        this.data.push(strNew);
+        this.record.clear();
+    }
+    
+    // подсчет всех значений
+    getAllValues() {
+        let result = 0;
+        this.data.forEach(element => {
+            console.log(element);
+            result += element.value;
+        });
+
+        return result;
+    }
+
+    // кол-ва записей в таблице 
+    length() {
+        return this.data.length;
+    }
+
+    // возврат ввиде объекта структура { “name” : “value” ...}
+    getObj() {
+        
+        let obj = {};
+        this.data.forEach(element => {
+            obj[element.name] = element.value;
+        });       
+
+        return obj;
     }
 
 }
 
-// возврат значения ввиде массива вопрос / ответ
-let getArrayRecord = function(questionOne, questionTwo, baseValueOne = '1', baseValueTwo = '200') {
-    return [prompt(questionOne, baseValueOne), prompt(questionTwo, baseValueTwo)];
-};
+// реализация основной логики работы с данными 
+// Личный бюджет
+class AppData {
 
-// выводим тип передаваемого значения
-let showTypeOf = function(data) {
-    console.log(data, typeof(data));
-};
-
-// расходы
-let additionalСost = new Array(); 
-
-/*
-Добавление/удаление расходов
-    costs(array) - массив расходов;
-    count(int) - кол-во операций добавления;
-    reload(boolean) - флаг очистки: 
-            false - добавление в конец существующего массива 
-            true - очистка массива перед добавлением
-*/
-let setExpenses = function(costs, count = 2, reload = false) {
-
-    let question1 = 'Какие обязательные ежемесячные расходы у вас есть?';
-    let question2 = 'Во сколько это обойдется?';
-    let qountQuestion = count; // кол-во запросов по расходам 
-
-    // reload === true очистка массива перед добавлением
-    if (reload) {
-        let countDelElem = costs.length;
-        costs.splice(0, countDelElem);
+    constructor (deposit_ = false, mission_ = 500000, period_ = 3) {
+        this.income = {};               
+        this.addIncome = [];            
+        this.expenses = {};             
+        this.addExpenses = [];          
+        this.deposit = deposit_;        
+        this.mission = mission_;        
+        this.period = period_;   
+        this.budget = 0;
+        this.budgetDay = 0;
+        this.budgetMonth = 0;
+        this.expensesMonth = 0;
+        
+        /* 
+            объект предоставляющий функционал по работе с расходами
+            используя паттерн проектирования "стратегия", можно использовать
+            любой вид хранения и обработки данных, включая обращение к другим ресурсам 
+        */
+        this.budgetOBJ = new FinArrayBudget() // объект расчета дополнительных расходов
     }
 
-    // cпросим про расходы и добавим в массив 
-    for (let index = 0; index < qountQuestion; index++) {
-        costs.push( getArrayRecord(question1, question2) );    
+    // работа с пользователем, ввод данных 
+    asking () {
+
+        // спросим месячный доход 
+        this.setBudget();
+
+        // спросим расходы 
+        this.setExpencesMonth();
+
+        // расчет расходов
+        this.getExpencesMonth();
+
+        // расчет дневного и месячного бюджета
+        this.getBudget();
+
+
     }
 
-};
+    // расчет сроков долстижения финансовой цели 
+    getTargetMonth () {
 
-// расчет всех расходов 
-function getExpensesMonth(expenses) {
-
-    // зададим дополнительные расходы
-    setExpenses(expenses);
-
-    let allExpense = 0;
-
-    expenses.forEach((element) => {
-        allExpense += Number(element[1]);
-    });
-
-    return allExpense;
-};
-
-// вычисление доходов за месяц
-function getAccumulatedMonth(moneyPerMonth, expenses) {
-
-    return  expenses - moneyPerMonth ;
-
-};
-
-// период для достижения финансовой цели
-function  getTargetMonth(missionMonth, monthBudget) {
-    return missionMonth / monthBudget;
-};
-
-// информация об уровне дохода
-function getStatusIncome(budgetDay) {
-  
-    switch (true) {
-    
-        case (budgetDay >= 800):
-            return 'Высокий уровень дохода';
-            break;
-    
-        case (budgetDay >= 300 && budgetDay < 800):
-            return 'Средний уровень дохода';
-            break;
-
-        case (budgetDay >= 0 && budgetDay < 300):
-            return 'Низкий уровень дохода';
-            break;
-
-        case (budgetDay < 0):
-            return 'Что-то пошло не так';
-            break;
+        return Math.ceil(this.mission / this.budgetMonth);
 
     };
+
+    // расчет бюджета за месяц и день запись результата
+    getBudget (dayInMonth = 30) {
+
+        // бюджет за месяц
+        this.budgetMonth = this.budget - this.getExpencesMonth();
+
+        // бюджет за день
+        this.budgetDay = this.budgetMonth / dayInMonth;
+        
+    }
+
+    // расчет всех дополнительных расходов, возврат суммы всех расходов 
+    // как по заданию - перебор через for in
+    getExpencesMonth (budgetOBJ = this.budgetOBJ) {
+        this.expenses = budgetOBJ.getObj();
+        //this.expensesMonth = budgetOBJ.getAllValues();
+        let result = 0;
+        for (let key in this.expenses) {
+            result +=  this.expenses[key];
+        }
+        
+        this.expensesMonth = result;
+        return result;
+    }
+
+    // создание дополнительных расходов 
+    setExpencesMonth (count = 2, budgetOBJ = this.budgetOBJ) {
+        
+        let question1 = 'Какие обязательные ежемесячные расходы у вас есть?';
+        let question2 = 'Во сколько это обойдется?';
+
+        for (let index = 0; index < count; index++) {
+            
+            let result1 = prompt(question1, 'Расходы список ' + (index+1) );
+            let result2 = prompt(question2, (index+1) * 100);
+
+            while(!this.validValue(result2)) {
+                let result2 = prompt(question2, (index+1) * 100);
+                console.log(result2);
+            };
+
+            
+            budgetOBJ.addString(result1, result2);
+            budgetOBJ.load();
+        }
+        
+    }
+
+    // зададим месячный доход
+    setBudget () {
+        this.budget = prompt('Ваш месячный доход?', '50000');
+        
+        while(!this.validValue(this.budget)) {
+            this.budget = prompt('Ваш месячный доход?', '50000');
+        }
+
+    }
+
+    getStatusIncome () {
+
+        let budgetDay = this.budgetDay;
+        switch (true) {
+        
+            case (budgetDay >= 800):
+                return 'Высокий уровень дохода';
+                break;
+        
+            case (budgetDay >= 300 && budgetDay < 800):
+                return 'Средний уровень дохода';
+                break;
+    
+            case (budgetDay >= 0 && budgetDay < 300):
+                return 'Низкий уровень дохода';
+                break;
+    
+            case (budgetDay < 0):
+                return 'Что-то пошло не так';
+                break;
+    
+        };
+    };
+
+    // проверка значений, входящий параметр содержать значения по описанному типу 
+    // если данный тип не описан - будет всегда возращаться false
+    // можно добавить любой тип для валидации
+    validValue (value = '', type = 'number') {
+
+        switch(type) {
+            
+            // значения должны содержать только цифры
+            case 'number':
+    
+                 if (isNaN(value) || value === '' || value === null){ 
+                    return false;
+                 } else {
+                     return true;
+                 };
+                
+                 break;
+        }
+
+        return false;
+    }
+
 };
 
-/*
-    Вычисление суммы зароботка в день
-    money - месячный доход 
-    dayInMonth - кол-во дней в месяце 
-*/
-function getBudgetDay(money, dayInMonth = 30) {
-    return money / dayInMonth;
-}
 
+// объявим объект 
+let firstPerson = new AppData();
+firstPerson.asking();
 
-// зададим сумму ежемесячного дохода
-start();
-
-// расчитаем доходы за месяц 
-let accumulatedMonth = getAccumulatedMonth(getExpensesMonth(additionalСost), money);
-console.log('Доход за месяц:', accumulatedMonth);
-
-// расчет кол-ва месяцев для достижения фин. цели 
-let missionMonthCount = getTargetMonth(mission, accumulatedMonth);
-if (missionMonthCount > 0) {
-    console.log('Достижение цели', mission,'за', Math.floor(missionMonthCount), 'мес.');
+// выведем необходимые значения
+console.log('Расходы за месяц - ', firstPerson.expensesMonth);
+if (firstPerson.getTargetMonth() > 0) {
+    console.log('Необходимая сумма:', firstPerson.mission, 'будет достигнута за', firstPerson.getTargetMonth(), 'мес.');
 } else {
-    console.log('Цель не будет достигнута');
+    console.log('Финансовая цель достигнута не будет!');
 }
-
-// вычислим бюджет на день и выведем сообщение при отрицательном бюджете
-let budgetDay = getBudgetDay(accumulatedMonth);
-if ( budgetDay < 0) {
-    console.log(getStatusIncome(budgetDay));
-};
-
-
+console.log(firstPerson.getStatusIncome());
