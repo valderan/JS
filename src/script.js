@@ -258,3 +258,10 @@ if (firstPerson.getTargetMonth() > 0) {
     console.log('Финансовая цель достигнута не будет!');
 }
 console.log(firstPerson.getStatusIncome());
+
+// Вывод структуры объекта 
+console.log('');
+console.log('Наша программа включает в себя данные:');
+for (let key in firstPerson) {
+    console.log(key, ' - ', firstPerson[key]);
+}
