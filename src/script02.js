@@ -1,51 +1,42 @@
 'use strict';
 
-// ввод параметров
-let arr = 
-[
-    '111111',
-    '2333',
-    '3333',
-    '444',
-    '5555',
-    '621222',
-    '711111'
+let week = [
+    'Понедельник',
+    'Вторник',
+    'Среда',
+    'Четверг',
+    'Пятница',
+    'Суббота',
+    'Воскресенье'
 ];
 
-// вовод в консоль значений начинающихся с 2 или 4
-arr.forEach((element) => {
-    if ( (element.length > 0) && (element.charAt(0) === '2' || element.charAt(0) === '4') ) {
-            console.log(element);
-    };  
+let date = new Date();
+let weekDayIndex = date.getDay() - 1;
 
+let stringHTML = '';
+week.forEach((element, index) => {
+    let html = '';
+    
+    if (index > 4) {
+        html = '<i>' + element + '</i>';
+    } else {
+        html = element;
+    }
+
+    if (weekDayIndex === index) {
+        html = '<b>' + html + '</b>';
+    };
+
+    console.log(date.getDay(), weekDayIndex, index, element);
+
+    stringHTML += html + '<br>';
 });
 
-// функция определяющая простое число(true) или составное(false)
-let checkPrimeNumber = function (number) {
-    
-    let checkStatus = true;
-    if (number === 1) {
-        return false;
-    }
-    for (let index = 2; index < number; index ++) {
-            
-        let check = number % index;
-        if (check === 0) {
-            checkStatus = false;
-            break;
-        };
-        
-    };
-    
-    return checkStatus;
-};
 
-// вывод всех простых чисел от 1 до 100
-// 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97
-for (let index = 1; index < 100; index++) {
 
-    if (checkPrimeNumber(index)) {
-        console.log('Простое число',index, ' делители этого числа: 1 и', index);
-    };
-    
-};
+let div = document.createElement('div');
+div.innerHTML = stringHTML;
+
+document.body.append(div);
+
+
