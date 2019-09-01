@@ -11,7 +11,9 @@ let week = [
 ];
 
 let date = new Date();
-let weekDayIndex = date.getDay() - 1;
+let weekDayIndex = date.getDay();
+
+( weekDayIndex === 0 ) ? weekDayIndex = 7 : weekDayIndex++; 
 
 let stringHTML = '';
 week.forEach((element, index) => {
@@ -23,7 +25,7 @@ week.forEach((element, index) => {
         html = element;
     }
 
-    if (weekDayIndex === index) {
+    if (weekDayIndex === (index + 1)) {
         html = '<b>' + html + '</b>';
     };
 
