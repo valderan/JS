@@ -97,7 +97,7 @@ class AppData {
         this.income = {};               
         this.addIncome = [];            
         this.expenses = {};             
-        this.addExpenses = ['оружие','наркотики','шлюхи'];          
+        this.addExpenses = [];          
         this.deposit = deposit_; 
         this.percentDeposite = 0;
         this.moneyDeposite = 0;      
@@ -131,6 +131,9 @@ class AppData {
 
         // спросим про депозит если есть 
         this.getInfoDeposit();
+
+        // спросимм про дополнительные расходы
+        this.setExpenses();
 
         // спросим расходы 
         this.setExpencesMonth();
@@ -230,8 +233,11 @@ class AppData {
         for (let index = 0; index < count; index++) {
             
             let result1 = prompt(question1);
-            let result2 = prompt(question2);
+            while(!this.validValue(result1, 'fullString')) {
+                result1 = prompt(question1);
+            };
 
+            let result2 = prompt(question2);
             while(!this.validValue(result2)) {
                 result2 = prompt(question2, (index+1) * 100);
             };
@@ -303,6 +309,17 @@ class AppData {
                  };
                 
                  break;
+
+            // значения могут содержать любые символы только не пустая строка     
+            case 'fullString':
+
+                if (value === '' || value === null){ 
+                    return false;
+                 } else {
+                     return true;
+                 };
+                 
+                break;     
         }
 
         return false;
@@ -335,7 +352,8 @@ for (let key in firstPerson) {
 
 // вывод всех  значений addExpenses каждое слово с большой буквы слова разделены запятой и пробелом
 let workArr = firstPerson.addExpenses;
-let resultString = '';
+let resultArr = [];
+let stringResult = '';
 let separator = ', ';
 
 workArr.forEach(element => {
@@ -345,15 +363,17 @@ workArr.forEach(element => {
 
     stringArr.forEach(element => {
 
-        let p1 = element.charAt(0);
-        let p2 = element.substr(1);
-    
-        resultString += p1.toUpperCase() + p2 + separator;
+        let wordResult = String(element.charAt(0)).toUpperCase() + element.substr(1);
+        if (wordResult.length > 0) {
+            resultArr.push(wordResult);
+        };  
 
     });
 
 });
 
-resultString = resultString.slice(0, resultString.length - 2);
+resultArr.forEach((element, index) => {
+    (index > 0) ? stringResult += separator + element : stringResult += element;
+});
 
-console.log(resultString);
+console.log(stringResult);
