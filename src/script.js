@@ -97,8 +97,10 @@ class AppData {
         this.income = {};               
         this.addIncome = [];            
         this.expenses = {};             
-        this.addExpenses = [];          
-        this.deposit = deposit_;        
+        this.addExpenses = ['оружие','наркотики','шлюхи'];          
+        this.deposit = deposit_; 
+        this.percentDeposite = 0;
+        this.moneyDeposite = 0;      
         this.mission = mission_;        
         this.period = period_;   
         this.budget = 0;
@@ -111,7 +113,8 @@ class AppData {
             используя паттерн проектирования "стратегия", можно использовать
             любой вид хранения и обработки данных, включая обращение к другим ресурсам 
         */
-        this.budgetOBJ = new FinArrayBudget() // объект расчета дополнительных расходов
+        this.budgetOBJ = new FinArrayBudget(); // объект расчета дополнительных расходов
+        this.addIncomeOBJ = new FinArrayBudget(); // объект расчета дополнительных доходов
     }
 
     // работа с пользователем, ввод данных 
@@ -119,6 +122,15 @@ class AppData {
 
         // спросим месячный доход 
         this.setBudget();
+
+        // спросим про доп. источник заработка
+        if (confirm('Есть ли у Вас дополнительный источник заработка?')) {
+            this.setAdditionalIncome();
+            this.income = this.addIncomeOBJ.getObj();
+        }
+
+        // спросим про депозит если есть 
+        this.getInfoDeposit();
 
         // спросим расходы 
         this.setExpencesMonth();
@@ -129,10 +141,48 @@ class AppData {
         // расчет дневного и месячного бюджета
         this.getBudget();
 
+    };
 
+
+    // сумма заработанных за период денег
+    calcSavedMoney() {
+        return this.budgetMonth * this.period;
+    }
+ 
+    // работа(ввод данных) с данными по депозиту
+    getInfoDeposit() {
+        if (this.deposit) {
+
+            // спросим процент по депозиту
+            let question1 = 'Какой годовой процент по депозиту?';
+            let result1 = prompt(question1, 10);
+            while(!this.validValue(result1)) {
+                result1 = prompt(question1, 10);
+            };
+            this.percentDeposite = result1;
+
+            // спросим сумму депозита 
+            let question2 = 'Какова сумма депозита?';
+            let result2 = prompt(question2, 10000);
+            while(!this.validValue(result2)) {
+                result2 = prompt(question2, 10000);
+            };
+            this.moneyDeposite = result2;
+        }
     }
 
-    // расчет сроков долстижения финансовой цели 
+    // ввод дополнительного заработка
+    setAdditionalIncome(count = 1, budgetOBJ = this.addIncomeOBJ) {
+
+        let question1 = 'Какой у Вас дополнительный заработок?';
+        let question2 = 'Сколько в месяц Вы на этом зарабатываете?';
+
+        this.setBudgetObject(count, budgetOBJ, question1, question2);
+
+    };
+
+
+    // расчет сроков достижения финансовой цели 
     getTargetMonth () {
 
         return Math.ceil(this.mission / this.budgetMonth);
@@ -148,7 +198,7 @@ class AppData {
         // бюджет за день
         this.budgetDay = this.budgetMonth / dayInMonth;
         
-    }
+    };
 
     // расчет всех дополнительных расходов, возврат суммы всех расходов 
     // как по заданию - перебор через for in
@@ -162,7 +212,35 @@ class AppData {
         
         this.expensesMonth = result;
         return result;
+    };
+
+    // ввод обязательных расходов(перечисление)
+    setExpenses() {
+
+        let addExpenses = prompt('Перечислите возможные расходы за рассчитываемый период через запятую', 
+                         'оружие, наркотики, шлюхи');
+        
+        this.addExpenses = addExpenses.split(',');
+
     }
+
+    // работа с бюджетом(FinArrayBudget) любого типа - ввод данных 
+    setBudgetObject(count, budgetOBJ, question1 = '', question2 = '') {
+       
+        for (let index = 0; index < count; index++) {
+            
+            let result1 = prompt(question1);
+            let result2 = prompt(question2);
+
+            while(!this.validValue(result2)) {
+                result2 = prompt(question2, (index+1) * 100);
+            };
+
+            
+            budgetOBJ.addString(result1, result2);
+            budgetOBJ.load();
+        }    
+    };
 
     // создание дополнительных расходов 
     setExpencesMonth (count = 2, budgetOBJ = this.budgetOBJ) {
@@ -170,22 +248,9 @@ class AppData {
         let question1 = 'Какие обязательные ежемесячные расходы у вас есть?';
         let question2 = 'Во сколько это обойдется?';
 
-        for (let index = 0; index < count; index++) {
-            
-            let result1 = prompt(question1, 'Расходы список ' + (index+1) );
-            let result2 = prompt(question2, (index+1) * 100);
-
-            while(!this.validValue(result2)) {
-                let result2 = prompt(question2, (index+1) * 100);
-                console.log(result2);
-            };
-
-            
-            budgetOBJ.addString(result1, result2);
-            budgetOBJ.load();
-        }
+        this.setBudgetObject(2, budgetOBJ, question1, question2);
         
-    }
+    };
 
     // зададим месячный доход
     setBudget () {
@@ -195,7 +260,7 @@ class AppData {
             this.budget = prompt('Ваш месячный доход?', '50000');
         }
 
-    }
+    };
 
     getStatusIncome () {
 
@@ -241,13 +306,13 @@ class AppData {
         }
 
         return false;
-    }
+    };
 
 };
 
 
 // объявим объект 
-let firstPerson = new AppData();
+let firstPerson = new AppData(true);
 firstPerson.asking();
 
 // выведем необходимые значения
@@ -259,9 +324,36 @@ if (firstPerson.getTargetMonth() > 0) {
 }
 console.log(firstPerson.getStatusIncome());
 
+/*
 // Вывод структуры объекта 
 console.log('');
 console.log('Наша программа включает в себя данные:');
 for (let key in firstPerson) {
     console.log(key, ' - ', firstPerson[key]);
 }
+*/
+
+// вывод всех  значений addExpenses каждое слово с большой буквы слова разделены запятой и пробелом
+let workArr = firstPerson.addExpenses;
+let resultString = '';
+let separator = ', ';
+
+workArr.forEach(element => {
+
+    let testString = element;
+    let stringArr = testString.split(' ');
+
+    stringArr.forEach(element => {
+
+        let p1 = element.charAt(0);
+        let p2 = element.substr(1);
+    
+        resultString += p1.toUpperCase() + p2 + separator;
+
+    });
+
+});
+
+resultString = resultString.slice(0, resultString.length - 2);
+
+console.log(resultString);
