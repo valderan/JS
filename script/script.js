@@ -220,29 +220,29 @@ let calc = new AppData(true);
 calc.start = function() {
 
     // если месячный доход пустой - заканчиваем расчет    
-    if (!calc.setBudget(salaryAmount.value)) {
+    if (!this.setBudget(salaryAmount.value)) {
         return;
     } 
 
     
-    if (!calc.getExpences()) {
+    if (!this.getExpences()) {
         alert('Заполните поля "Обязательные расходы" !');
         return;
     } 
 
-    if (!calc.getIncome()) {
+    if (!this.getIncome()) {
         alert('Заполните поля "Дополнительных доходов" !');
         return;
     }
 
-    calc.getExpencesMonth();
-    calc.getAddExpenses();
-    calc.getAddIncome();
-    calc.getBudget();
-    calc.targetMonth();
+    this.getExpencesMonth();
+    this.getAddExpenses();
+    this.getAddIncome();
+    this.getBudget();
+    this.targetMonth();
 
-    calc.inputDisable();
-    calc.showResult();
+    this.inputDisable();
+    this.showResult();
 };
 
 // блокируем ввод всех элементов
@@ -257,6 +257,62 @@ calc.inputDisable = function() {
     btnStart.style.display = 'none';
     btnCancel.style.display = 'block';
 };
+
+// очищение формы
+function reset (calc) {
+
+    // разблокируем поля 
+    let allData = Array.from(document.querySelector('.data').getElementsByTagName('input'));
+    allData.forEach((element) => {
+        if(element.type === 'text') {
+            element.disabled = false;
+        };
+    });
+
+    // очистим все эллементы ввода 
+    let dataDiv = Array.from(document.querySelector('.data').getElementsByTagName('input'));
+    dataDiv.forEach((element) => {
+        element.value = '';
+    });
+
+    periodSelect.value = 1;
+    calc.setPeriod();
+
+    // очистим поля результата
+    for (let index = 0; index < resultFields.length; index++) {
+        resultFields[index].value = '';         
+    };
+
+    // Вернем обязательные расходы к одной строке с кнопкой
+    expensesItems = document.querySelectorAll('.expenses-items');
+    expensesItems.forEach((element, index) => {
+        if (index > 0) {
+            element.remove();
+        };
+    });
+    btnPlusExpensesAdd.style.display = 'block';
+
+    // Вернем дополнительные доходы к одной строке
+    incomeItem = document.querySelectorAll('.income-items');
+    incomeItem.forEach((element, index) => {
+        if (index > 0) {
+            element.remove();
+        };
+    });
+    btnPlusIncomeAdd.style.display = 'block';
+    
+    // вернем кнопки к исходным данным
+    btnStart.style.display = 'block';
+    btnCancel.style.display = 'none';
+
+    // переопределим объект
+    calc = new AppData(true);
+
+    periodSelect.removeEventListener('input', show);
+
+
+};
+
 
 // добавление блока Обязательные расходы
 calc.addExpensesBlock = function(count = 3) {
@@ -331,21 +387,21 @@ calc.getIncome = function () {
 
 // отображение результата расчетов в полях справа
 calc.showResult = function() {
-    valueBudgetMonth.value = calc.budgetMonth;
-    valueBudgetDay.value = Math.round(calc.budgetDay);
-    valueExpensesMonth.value = calc.expensesMonth;
-    valueAdditionalExpences.value = calc.addExpenses.join(', ');
-    valueAdditionalIncome.value = calc.addIncome.join(',');
-    valueTargetMonth.value = Math.ceil(calc.targetMonth());
-    valueIncomePeriod.value = calc.calcPeriod();
+    valueBudgetMonth.value = this.budgetMonth;
+    valueBudgetDay.value = Math.round(this.budgetDay);
+    valueExpensesMonth.value = this.expensesMonth;
+    valueAdditionalExpences.value = this.addExpenses.join(', ');
+    valueAdditionalIncome.value = this.addIncome.join(',');
+    valueTargetMonth.value = Math.ceil(this.targetMonth());
+    valueIncomePeriod.value = this.calcPeriod();
 
-    periodSelect.addEventListener('input', () => {
-        // calc.setPeriod();
-        // valueTargetMonth.value = Math.ceil(calc.targetMonth());
-        calc.showResult();
-    });
+    periodSelect.addEventListener('input', show);
     
 }
+
+function show() {
+    calc.showResult();
+};
 
 // добавление дополнительных расходов
 calc.getAddExpenses = function() {
@@ -371,14 +427,14 @@ calc.getAddIncome = function() {
 
 // расчет фин цели
 calc.targetMonth = function () {
-     calc.mission = targetAmount.value;
-     return calc.getTargetMonth();
+     this.mission = targetAmount.value;
+     return this.getTargetMonth();
 }
 
 // расчет за период
 calc.calcPeriod = function() {
-    calc.period = periodSelect.value;
-    return calc.calcSavedMoney();
+    this.period = periodSelect.value;
+    return this.calcSavedMoney();
 };
 
 // изменение отображения значения периода мес
@@ -406,6 +462,10 @@ periodSelect.addEventListener('click', () => {
     calc.setPeriod();
 });
 
+// очистка формы
+btnCancel.addEventListener('click', () => {
+    reset(calc);
+});
 
 // проверка значений правильности ввода
 function checkInputValid() {
