@@ -442,30 +442,35 @@ calc.setPeriod = function() {
     titlePeriodAmount[0].innerHTML = periodSelect.value;
 };
 
+// навесим события на кнопки
+calc.eventsListeners = function() {
 // кнопка старт
-btnStart.addEventListener('click', () => {
-    calc.start();
-});    
+    btnStart.addEventListener('click', () => {
+        calc.start();
+    });    
 
 // добапвление строки расходов 
-btnPlusExpensesAdd.addEventListener('click', () => {
-    calc.addExpensesBlock();
-});
+    btnPlusExpensesAdd.addEventListener('click', () => {
+        calc.addExpensesBlock();
+    });
 
 // добавление строки дополнительных доходов
-btnPlusIncomeAdd.addEventListener('click', () => {
-    calc.addIncomeBlock();
-});
+    btnPlusIncomeAdd.addEventListener('click', () => {
+        calc.addIncomeBlock();
+    });
 
 
-periodSelect.addEventListener('click', () => {
-    calc.setPeriod();
-});
+    periodSelect.addEventListener('click', () => {
+        calc.setPeriod();
+    });
 
 // очистка формы
-btnCancel.addEventListener('click', () => {
-    reset(calc);
-});
+    btnCancel.addEventListener('click', () => {
+        reset(calc);
+    });
+};
+
+calc.eventsListeners();
 
 // проверка значений правильности ввода
 function checkInputValid() {
