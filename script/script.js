@@ -56,6 +56,79 @@ window.addEventListener('DOMContentLoaded', function() {
 
     }
 
-    countTimer('23 september 2019 10:28:00');
+    countTimer('30 september 2019 10:28:00');
 
+    // menu
+    const toggleMenu = () => {
+
+        const btnMenu = document.querySelector('.menu'),
+            menu = document.querySelector('menu'),
+            closeBtn = document.querySelector('.close-btn'),
+            menuItem = document.querySelectorAll('ul>li');
+
+        const handlerMenu = () => {
+           menu.classList.toggle('active-menu');
+        };
+        
+        btnMenu.addEventListener('click', handlerMenu);
+        closeBtn.addEventListener('click', handlerMenu);
+        menuItem.forEach((elem) => elem.addEventListener('click', handlerMenu)); 
+
+
+    };
+
+    toggleMenu();
+
+    // определение мобильного браузера
+    function detectMobile() {
+        if( (window.innerWidth <= 800)  &&  (window.innerHeight <= 680) ) {
+          return true;
+        } else {
+          return false;
+        }
+     };
+
+    // popup
+    const togglePopUp = () => {
+        
+        const popup = document.querySelector('.popup'),
+            popupBtn = document.querySelectorAll('.popup-btn'),
+            popupClose = document.querySelector('.popup-close'),
+            popupContent = document.querySelector('.popup-content');
+
+        // откроем popup
+        const popupOpen = () => {
+
+            let count = 0;
+            
+            if (detectMobile()) {
+                popup.style.display = 'block';    
+            } else {
+                popupContent.style.left = '1%';
+                popup.style.display = 'block';    
+                draw();
+            };
+
+            function draw() {
+                count++;
+                if (count < 48) {
+                    popupContent.style.left = count + '%';
+                    setTimeout(draw, 5);  
+                }
+            };
+
+        
+        };
+
+        popupBtn.forEach((elem) => {
+            elem.addEventListener('click', popupOpen);
+        });
+
+        popupClose.addEventListener('click', () => {
+            popup.style.display = 'none';
+        });
+
+    };
+
+    togglePopUp();
 });
