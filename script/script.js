@@ -81,7 +81,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
     // определение мобильного браузера
     function detectMobile() {
-        if( (window.innerWidth <= 800)  &&  (window.innerHeight <= 680) ) {
+        if( (window.innerWidth <= 768)  &&  (window.innerHeight <= 680) ) {
           return true;
         } else {
           return false;
