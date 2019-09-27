@@ -439,9 +439,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
             if (typeValue && squareValue) {
                 total = price * typeValue * squareValue * countValue * dayValue;
-            } else {
-                total = 0;
-            }
+            } 
             
             totaValue.textContent = Math.round(total);
         };
@@ -455,6 +453,19 @@ window.addEventListener('DOMContentLoaded', function() {
     }; 
 
     calc(100);
+
+    // валидация заявки в header
+
+    const valid = new Validator({
+        selector: '#form2',
+        pattern: {},
+        method: {}
+    });
+
+    valid.init();
+
+    
+
 });
 
 
