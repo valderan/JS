@@ -453,12 +453,13 @@ window.addEventListener('DOMContentLoaded', function() {
     }; 
 
     calc(100);
+    
+    
     // валидация заявки в header
-
     const validForm1 = new Validator({
         selector: '#form1',
         pattern: {
-            name: /[а-яА-ЯёЁ]$/
+            name: /^[а-яА-ЯёЁ]*$/
         },
         method: {
             'form1-phone': [
@@ -478,10 +479,12 @@ window.addEventListener('DOMContentLoaded', function() {
 
     validForm1.init();
 
+    // валидация формы в footer
     const validForm2 = new Validator({
         selector: '#form2',
         pattern: {
-            name: /[а-яА-ЯёЁ]$/
+            name: /^[а-яА-ЯёЁ]*$/,
+            message: /^[а-яА-ЯёЁ .!,?]*$/
         },
         method: {
             'form2-phone': [
@@ -495,6 +498,10 @@ window.addEventListener('DOMContentLoaded', function() {
             'form2-name': [
                 ['notEmpty'],
                 ['pattern', 'name']
+            ],
+            'form2-message': [
+                ['notEmpty'],
+                ['pattern', 'message']
             ]
         }
     });
