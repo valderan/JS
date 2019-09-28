@@ -568,64 +568,36 @@ window.addEventListener('DOMContentLoaded', function() {
             formData.forEach((val, key) => {
                 body[key] = val;
             });
-           
+
             const postData = (body) => {
-    
-                return new Promise((resolve, reject) => {
-                    
-                    const request = new XMLHttpRequest();
-                    
-                    request.open('POST', './server.php');
-                    request.setRequestHeader('Content-Type', 'application/json');
-
-                    request.addEventListener('readystatechange', () => {
-                        
-                        if (request.readyState !== 4) {
-                            reject;
-                        }
-        
-                        if (request.status === 200) {
-                            resolve();
-                        } else {
-                            reject(request.status)
-                        }
-    
-                    });
-
-                    //request.setRequestHeader('Content-Type', 'multipart/form-data');            
-                    request.send(JSON.stringify(body));    
-
+                return fetch('./server.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(body)
                 });
-                
-            };
+            }
 
             postData(body)
-                .then(() => {
-                // resolve
-                    statusMessage.textContent = successMessage;
-                    
-                    elementsForm.forEach(elem => {
-                        elem.classList.remove('success');
-                        elem.value = '';
+                    .then((response) => {
+                        if(response.status !== 200) {
+                            throw new Error('Status network not 200');
+                        }
+                        statusMessage.textContent = successMessage;
+                    })
+                    .catch ((error) => {
+                        statusMessage.textContent = errorMessage;
+                        console.error(error);
                     });
-
-                })
-                .catch((error) => {
-                // reject
-                    statusMessage.textContent = errorMessage;
-                    console.error(error);
-                });
             
         });
-
 
     };
 
     sendForm('form1');
     sendForm('form2');
     sendForm('form3');
-
-   
 
 });
 
