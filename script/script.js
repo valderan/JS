@@ -599,6 +599,7 @@ window.addEventListener('DOMContentLoaded', function() {
                     statusMessage.textContent = successMessage;
                     
                     elementsForm.forEach(elem => {
+                        elem.classList.remove('success');
                         elem.value = '';
                     });
 
