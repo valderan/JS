@@ -13,12 +13,15 @@ class Validator{
         this.applyStyle();
         this.setPattern();
         this.elementsForm.forEach(elem => elem.addEventListener('change', this.checkIt.bind(this)));
-        this.form.addEventListener('submit',  e => {
-            this.elementsForm.forEach(elem => this.checkIt({target: elem}));
-            if (this.error.size) {
-                e.preventDefault();
-            }
-        });
+
+        // отключим sendform
+        // this.form.addEventListener('submit',  e => {
+        //     this.elementsForm.forEach(elem => this.checkIt({target: elem}));
+        //     if (this.error.size) {
+        //         e.preventDefault();
+        //     }
+        // });
+
     }
 
     isValid(elem) {
@@ -117,7 +120,8 @@ class Validator{
         }
 
         if (!this.pattern.email) {
-            this.pattern.email = /^\w+\@\w+\.\w{2,}$/;
+            //this.pattern.email = /^\w+\@\w+\.\w{2,}$/;
+            this.pattern.email = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         }
         
     }

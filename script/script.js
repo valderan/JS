@@ -56,7 +56,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
     }
 
-    countTimer('30 september 2019 14:03:00');
+    countTimer('01 october 2019 21:00:00');
 
     // menu
     const toggleMenu = () => {
@@ -458,9 +458,7 @@ window.addEventListener('DOMContentLoaded', function() {
     // валидация заявки в header
     const validForm1 = new Validator({
         selector: '#form1',
-        pattern: {
-            name: /^[а-яА-ЯёЁ]*$/
-        },
+        pattern: {},
         method: {
             'form1-phone': [
                 ['notEmpty'],
@@ -469,22 +467,16 @@ window.addEventListener('DOMContentLoaded', function() {
             'form1-email': [
                 ['notEmpty'],
                 ['pattern', 'email']
-            ],
-            'form1-name': [
-                ['notEmpty'],
-                ['pattern', 'name']
             ]
         }
     });
-
-    validForm1.init();
 
     // валидация формы в footer
     const validForm2 = new Validator({
         selector: '#form2',
         pattern: {
-            name: /^[а-яА-ЯёЁ]*$/,
-            message: /^[а-яА-ЯёЁ .!,?]*$/
+            //name: /^[а-яА-ЯёЁ]*$/,
+            //message: /^[а-яА-ЯёЁ .!,?]*$/
         },
         method: {
             'form2-phone': [
@@ -494,19 +486,138 @@ window.addEventListener('DOMContentLoaded', function() {
             'form2-email': [
                 ['notEmpty'],
                 ['pattern', 'email']
-            ],
-            'form2-name': [
-                ['notEmpty'],
-                ['pattern', 'name']
-            ],
-            'form2-message': [
-                ['notEmpty'],
-                ['pattern', 'message']
             ]
         }
     });
 
+    // валидация формы в footer
+    const validForm3 = new Validator({
+        selector: '#form3',
+        pattern: {
+            //name: /^[а-яА-ЯёЁ]*$/,
+        },
+        method: {
+            'form3-phone': [
+                ['notEmpty'],
+                ['pattern', 'phone']
+            ],
+            'form3-email': [
+                ['notEmpty'],
+                ['pattern', 'email']
+            ]
+        }
+    });
+
+    validForm1.init();
     validForm2.init();
+    validForm3.init();
+
+    // запрет ввода
+    for (let index = 1; index < 5; index++) {
+        let nameForm = `form${index}-name`;
+        
+        if (index === 4) nameForm = `form2-message`;
+
+        let element = document.getElementById(nameForm);
+        element.addEventListener('input', ()=> {
+            element.value = element.value.replace(/[^а-яА-ЯЁё ]/,'');
+        });  
+    }
+
+    // send-ajax-form
+    const sendForm = (formName) => {
+
+        const errorMessage = 'Что-то пошло не так!',
+            fillFormMessage = 'Поля формы заполены неверно!',
+            loadMessage = 'Загрузка...',
+            successMessage = 'Спасибо! Мы скоро с вами свяжемся!';
+
+        const form = document.getElementById(formName);
+        const elementsForm = [...form.elements].filter(item => {
+            return item.tagName.toLowerCase() !== 'button' && item.type !== 'button';
+        });
+
+        const statusMessage = document.createElement('div');
+        statusMessage.textContent = 'Тут будет сообщение!';
+        statusMessage.style.cssText = 'font-size: 2rem; color: red';
+
+        form.addEventListener('submit', (event) => { 
+            
+            event.preventDefault();
+            form.appendChild(statusMessage);
+
+            // проверка кол-ва ошибок
+            const elementsForm = [...form.elements].filter(item => {
+                return item.tagName.toLowerCase() !== 'button' && item.type !== 'button';
+            });
+            let status = 0;
+            elementsForm.forEach(elem => {
+                if (elem.classList.contains('error')) status++;
+            });
+
+            if (status > 0) {
+                statusMessage.textContent = fillFormMessage;
+                return;
+            }
+            // end проверка аол-ва ошибок
+            
+            statusMessage.textContent = loadMessage;
+            const formData = new FormData(form);
+            let body = {};
+    
+            formData.forEach((val, key) => {
+                body[key] = val;
+            });
+           
+            const postData = (body, outputData, errorData) => {
+                const request = new XMLHttpRequest();
+            
+                request.addEventListener('readystatechange', () => {
+                    
+                    if (request.readyState !== 4) {
+                        return;
+                    }
+    
+                    if (request.status === 200) {
+                        outputData();
+                    } else {
+                        errorData(request.status)
+                    }
+
+                });
+    
+                request.open('POST', './server.php');
+                //request.setRequestHeader('Content-Type', 'multipart/form-data');
+                request.setRequestHeader('Content-Type', 'application/json');
+                
+                request.send(JSON.stringify(body));
+            }
+
+            postData(body, 
+                () => {
+                // outputData
+                    statusMessage.textContent = successMessage;
+                    
+                    elementsForm.forEach(elem => {
+                        elem.value = '';
+                    });
+
+                }, (error) => {
+                // errorData
+                    statusMessage.textContent = errorMessage;
+                    console.error(error);
+                });
+            
+        });
+
+
+    };
+
+    sendForm('form1');
+    sendForm('form2');
+    sendForm('form3');
+
+   
 
 });
 
