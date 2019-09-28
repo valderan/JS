@@ -584,6 +584,12 @@ window.addEventListener('DOMContentLoaded', function() {
                         if(response.status !== 200) {
                             throw new Error('Status network not 200');
                         }
+
+                        elementsForm.forEach(elem => {
+                            elem.classList.remove('success');
+                            elem.value = '';
+                        });
+
                         statusMessage.textContent = successMessage;
                     })
                     .catch ((error) => {
