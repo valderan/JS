@@ -569,33 +569,39 @@ window.addEventListener('DOMContentLoaded', function() {
                 body[key] = val;
             });
            
-            const postData = (body, outputData, errorData) => {
-                const request = new XMLHttpRequest();
-            
-                request.addEventListener('readystatechange', () => {
-                    
-                    if (request.readyState !== 4) {
-                        return;
-                    }
+            const postData = (body) => {
     
-                    if (request.status === 200) {
-                        outputData();
-                    } else {
-                        errorData(request.status)
-                    }
+                return new Promise((resolve, reject) => {
+                    
+                    const request = new XMLHttpRequest();
+                    
+                    request.open('POST', './server.php');
+                    request.setRequestHeader('Content-Type', 'application/json');
+
+                    request.addEventListener('readystatechange', () => {
+                        
+                        if (request.readyState !== 4) {
+                            reject;
+                        }
+        
+                        if (request.status === 200) {
+                            resolve();
+                        } else {
+                            reject(request.status)
+                        }
+    
+                    });
+
+                    //request.setRequestHeader('Content-Type', 'multipart/form-data');            
+                    request.send(JSON.stringify(body));    
 
                 });
-    
-                request.open('POST', './server.php');
-                //request.setRequestHeader('Content-Type', 'multipart/form-data');
-                request.setRequestHeader('Content-Type', 'application/json');
                 
-                request.send(JSON.stringify(body));
-            }
+            };
 
-            postData(body, 
-                () => {
-                // outputData
+            postData(body)
+                .then(() => {
+                // resolve
                     statusMessage.textContent = successMessage;
                     
                     elementsForm.forEach(elem => {
@@ -603,8 +609,9 @@ window.addEventListener('DOMContentLoaded', function() {
                         elem.value = '';
                     });
 
-                }, (error) => {
-                // errorData
+                })
+                .catch((error) => {
+                // reject
                     statusMessage.textContent = errorMessage;
                     console.error(error);
                 });
